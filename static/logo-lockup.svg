@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 590 100" role="img" aria-labelledby="title">
+  <title id="title">ENSAMAP</title>
+  <g transform="scale(.5)">
+    <path fill="#7D7C82" d="M0 0L64 64V200H0Z"/>
+    <path fill="#CA0D23" d="M91 64L155 0V136L91 200Z"/>
+    <path fill="#7D7C82" d="M182 0L246 64V200L182 136Z"/>
+  </g>
+  <!-- Lettre par lettre, d’après le mot-symbole fourni. Aucun fichier de police requis. -->
+  <g fill="#262626" transform="translate(151 15) scale(.8)">
+    <path d="M0 0H60V17H16V36H52V52H16V71H60V88H0Z"/>
+    <path transform="translate(77)" d="M0 88V0H17L49 56V0H65V88H48L16 32V88Z"/>
+    <path transform="translate(159)" d="M60 0H16Q0 0 0 16V37Q0 53 16 53H43V71H0V88H44Q60 88 60 72V50Q60 36 44 36H17V17H60Z"/>
+    <path transform="translate(233)" fill-rule="evenodd" d="M0 88V32L33.5 0L67 32V88H50V61H17V88Z M17 44H50V38L33.5 22L17 38Z"/>
+    <path transform="translate(313)" d="M0 88V0H16L38.5 22L61 0H77V88H61V30L38.5 50L16 30V88Z"/>
+    <path transform="translate(404)" fill-rule="evenodd" d="M0 88V32L33.5 0L67 32V88H50V61H17V88Z M17 44H50V38L33.5 22L17 38Z"/>
+    <path transform="translate(485)" fill-rule="evenodd" d="M0 88V0H43Q63 0 63 20V41Q63 61 43 61H17V88Z M17 17V44H41Q47 44 47 38V23Q47 17 41 17Z"/>
+  </g>
+</svg>

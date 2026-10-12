@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#CA0D23">
+  <title>ENSAMAP · Explorer le campus</title>
+  <link rel="icon" href="{{ url_for('static', filename='logo.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='map-tools-14') }}">
+  <script src="{{ url_for('static', filename='app.js', v='map-tools-14') }}" defer></script>
+</head>
+<body>
+  <main class="map-app" aria-label="ENSAMAP, plan du campus">
+    <section class="map-panel" aria-label="Plan interactif du campus">
+      <div class="map-viewport" id="map-viewport">
+        <svg id="campus-map" viewBox="0 130 1420 930" aria-labelledby="map-title map-desc" role="group">
+          <title id="map-title">Plan illustré de l’ENSAM Rabat</title>
+          <desc id="map-desc">Cliquez sur un bâtiment, une entrée ou le terrain ENSAM pour ouvrir sa fiche. Les parcelles voisines sont grisées.</desc>
+          <!-- Les effets visuels sont déjà calculés dans ces images légères. -->
+          <g id="map-artwork" transform="rotate(180 710 600)" pointer-events="none">
+            <image id="campus-surroundings" href="{{ url_for('static', filename='campus-context-v1.webp') }}" x="-253.84" y="-31.69" width="1924.46" height="1233.76" preserveAspectRatio="none"/>
+            <image href="{{ url_for('static', filename='campus-layer-v1.webp') }}" x="0" y="140" width="1420" height="920"/>
+          </g>
+          <g class="avenue-names" aria-label="Avenues autour du campus">
+            <text data-x="730" data-y="186" data-angle="2" text-anchor="middle">Av. des Forces Armées Royales</text>
+            <text data-x="1234" data-y="586" data-angle="88" text-anchor="middle">Av. Allal Al Fassi</text>
+            <text data-x="932" data-y="976" data-angle="-14" text-anchor="middle">Av. Azzaitoune</text>
+          </g>
+          {% for place in places %}
+          <g class="map-place known {{ 'overview' if place.get('overview') else '' }}" data-id="{{ place.id }}" tabindex="0" role="button" aria-label="{{ place.name }}" aria-pressed="false">
+            <title>{{ place.name }}</title>
+            <path class="hit-area" d="{{ place.outline }}" fill-rule="evenodd" transform="rotate(180 710 600)"/>
+            <g class="map-label" transform="translate({{ place.x }} {{ place.y }})">
+              <text class="known-name" text-anchor="middle">{{ place.name }}</text>
+            </g>
+          </g>
+          {% endfor %}
+          <g id="my-location" visibility="hidden" pointer-events="none" aria-hidden="true">
+            <circle id="location-accuracy" r="1" fill="#4285f4" fill-opacity=".14" stroke="#4285f4" stroke-opacity=".35" vector-effect="non-scaling-stroke"/>
+            <g id="location-dot"><circle r="11" fill="white" fill-opacity=".8"/><circle r="7" fill="#4285f4" stroke="white" stroke-width="2"/></g>
+          </g>
+        </svg>
+      </div>
+      <div class="map-tools">
+        <div class="zoom-controls" aria-label="Zoom du plan"><button id="zoom-in" aria-label="Agrandir le plan">+</button><button id="zoom-out" aria-label="Réduire le plan">−</button></div>
+        <button id="rotate-map" class="map-tool" aria-label="Pivoter le plan de 90° dans le sens horaire" title="Pivoter le plan de 90°"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 10a7 7 0 1 0-1 7M19 4v6h-6"/></svg></button>
+        <button id="locate-me" class="map-tool" aria-label="Afficher ma position" aria-pressed="false" title="Afficher ma position"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/></svg></button>
+      </div>
+      <div id="location-status" class="location-status" hidden><span id="location-message" role="status" aria-live="polite"></span><button id="stop-location" aria-label="Arrêter la localisation" title="Arrêter la localisation">×</button></div>
+      <div class="map-credit">Réf. Google Earth · Plan illustratif · Projet étudiant</div>
+    </section>
+
+    <aside class="search-panel" aria-label="Rechercher un lieu">
+      <div class="search-area">
+        <div class="brand-row"><a class="brand" href="/" aria-label="ENSAMAP, accueil"><img src="{{ url_for('static', filename='logo-lockup.svg') }}" alt="ENSAMAP" width="200" height="34"></a><span class="campus-tag">RABAT</span></div>
+        <div class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><label class="sr-only" for="search">Rechercher dans le campus</label><input type="search" id="search" placeholder="Rechercher dans le campus" autocomplete="off"><button id="clear-search" aria-label="Effacer la recherche" hidden>×</button><kbd>/</kbd></div>
+      </div>
+      <div class="filters" aria-label="Catégories"><button class="filter active" data-category="all" aria-pressed="true">Tout le campus</button>{% for category in categories %}<button class="filter" data-category="{{ category }}" aria-pressed="false">{{ category }}</button>{% endfor %}</div>
+      <div class="panel-content" id="panel-content">
+        <button class="sheet-handle" id="toggle-sheet" aria-label="Développer les lieux du campus" aria-expanded="false"><span></span></button>
+        <div class="results-area" id="results-area">
+          <div class="section-heading"><div><h1>Explorez le campus</h1><p>ENSAM Rabat <span>·</span> <span id="result-count">{{ places | length }}</span> lieux</p></div><button id="toggle-panel" class="icon-button" aria-label="Réduire la liste des lieux" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 14 6-6 6 6"/></svg></button></div>
+          <div id="results"></div>
+          <p id="search-status" class="status" role="status" aria-live="polite"></p>
+          <p class="annotation-note">Votre campus. Choisissez un lieu sur le plan ou cherchez son nom.</p>
+        </div>
+        <section class="detail" id="detail" aria-labelledby="detail-title" hidden>
+          <div class="detail-top"><span class="place-type" id="detail-category"></span><button id="close-detail" class="icon-button" aria-label="Fermer la fiche">×</button></div>
+          <h2 id="detail-title"></h2><p class="detail-location">ENSAM Rabat · Campus</p>
+          <button class="primary-button" id="focus-place"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 7 7-7 11-7-11Z"/><circle cx="12" cy="10" r="2"/></svg>Voir sur la carte</button>
+          <div class="detail-info"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></svg><p id="detail-description"></p></div>
+          <div class="detail-meta"><span id="detail-id"></span><span>Plan du campus</span></div>
+        </section>
+      </div>
+    </aside>
+    <div class="map-caption"><span class="caption-dot"></span><strong>ENSAM Rabat</strong><span>Votre campus. Une direction claire.</span></div>
+  </main>
+  <script id="places-data" type="application/json">{{ places | tojson }}</script>
+  <script id="location-data" type="application/json">{{ location_reference | tojson }}</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 246 200" role="img" aria-labelledby="title">
+  <title id="title">ENSAMAP — trois plis</title>
+  <path fill="#7D7C82" d="M0 0L64 64V200H0Z"/>
+  <path fill="#CA0D23" d="M91 64L155 0V136L91 200Z"/>
+  <path fill="#7D7C82" d="M182 0L246 64V200L182 136Z"/>
+</svg>
